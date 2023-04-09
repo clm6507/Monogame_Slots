@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Devcade;
 using System;
+using System.ComponentModel.Design;
 
 // MAKE SURE YOU RENAME ALL PROJECT FILES FROM DevcadeGame TO YOUR YOUR GAME NAME
 namespace DevcadeSlots
@@ -40,6 +41,30 @@ namespace DevcadeSlots
             }
 		}
 
+		public SlotImage(int num)
+		{
+			this.num = num;
+			if (num == 1)
+			{
+				//texture = FILL THIS IN
+			}else if (num == 2)
+			{
+                //texture = FILL THIS IN
+            }
+            else if (num == 3)
+			{
+                //texture = FILL THIS IN
+            }
+            else if (num == 4)
+			{
+                //texture = FILL THIS IN
+            }
+            else
+			{
+                //texture = FILL THIS IN
+            }
+        }
+
 		public int getNum()
 		{
 			return num;
@@ -55,7 +80,13 @@ namespace DevcadeSlots
 	{
 		private GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
-        private bool _ready_for_next_input;
+        private bool _readyForNextInput;
+		private bool _colOneMoving;
+		private bool _colTwoMoving;
+		private bool _colThreeMoving;
+		private SlotImage[] _colOne;
+		private SlotImage[] _colTwo;
+		private SlotImage[] _colThree;
         Texture2D texture;
 
         /// <summary>
@@ -96,8 +127,27 @@ namespace DevcadeSlots
 			#endregion
 
 			// TODO: Add your initialization logic here
-			_ready_for_next_input = true;
-			texture = new Texture2D(GraphicsDevice, 1, 1);
+			_readyForNextInput = true;
+
+			_colOneMoving = false;
+			_colTwoMoving = false;
+			_colThreeMoving = false;
+
+			_colOne = new SlotImage[2];
+			_colTwo = new SlotImage[2];
+			_colThree = new SlotImage[2];
+			
+			_colOne[0] = new SlotImage();
+			_colOne[1] = new SlotImage(1);
+
+            _colTwo[0] = new SlotImage();
+            _colTwo[1] = new SlotImage(1);
+
+            _colThree[0] = new SlotImage();
+            _colThree[1] = new SlotImage(1);
+
+
+            texture = new Texture2D(GraphicsDevice, 1, 1);
 
 
             windowSize = GraphicsDevice.Viewport.Bounds;
@@ -155,7 +205,7 @@ namespace DevcadeSlots
 		{
 			GraphicsDevice.Clear(Color.Gray);
 
-			if (_ready_for_next_input && Keyboard.GetState().IsKeyDown(Keys.Down))
+			if (_readyForNextInput && Keyboard.GetState().IsKeyDown(Keys.Down))
 			{
 				GraphicsDevice.Clear(Color.White);
 			}
@@ -165,10 +215,10 @@ namespace DevcadeSlots
             // Batches all the draw calls for this frame, and then performs them all at once
             _spriteBatch.Begin();
 
-            if (_ready_for_next_input && Keyboard.GetState().IsKeyDown(Keys.Down))
+            if (_readyForNextInput && Keyboard.GetState().IsKeyDown(Keys.Down))
             {
                 _spriteBatch.Draw(texture, new Rectangle(100, 100, 100, 100), Color.White);
-                _ready_for_next_input = false;
+                _readyForNextInput = false;
             }
             
 			// TODO: Add your drawing code here
