@@ -7,6 +7,50 @@ using System;
 // MAKE SURE YOU RENAME ALL PROJECT FILES FROM DevcadeGame TO YOUR YOUR GAME NAME
 namespace DevcadeSlots
 {
+	public class SlotImage
+	{
+		private int num;
+		private Texture2D texture;
+		public SlotImage() 
+		{
+			Random rand = new Random();
+			int randInt = rand.Next(0,100);
+			if (randInt < 50)
+			{
+				//texture = FILL THIS IN;
+				num = 1;
+			}else if (randInt < 70)
+			{
+                //texture = FILL THIS IN;
+                num = 2;
+			}else if (randInt < 85)
+			{
+                //texture = FILL THIS IN;
+                num = 3;
+            }
+            else if (randInt < 95)
+			{
+                //texture = FILL THIS IN;
+                num = 4;
+            }
+            else
+			{
+                //texture = FILL THIS IN;
+                num = 5;
+            }
+		}
+
+		public int getNum()
+		{
+			return num;
+		}
+
+		public Texture2D GetTexture()
+		{
+			return texture;
+		}
+	}
+
 	public class Game1 : Game
 	{
 		private GraphicsDeviceManager _graphics;
