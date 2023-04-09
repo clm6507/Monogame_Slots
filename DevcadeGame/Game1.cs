@@ -2,24 +2,28 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Devcade;
+using System;
 
 // MAKE SURE YOU RENAME ALL PROJECT FILES FROM DevcadeGame TO YOUR YOUR GAME NAME
-namespace DevcadeGame
+namespace DevcadeSlots
 {
 	public class Game1 : Game
 	{
 		private GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
-		
-		/// <summary>
-		/// Stores the window dimensions in a rectangle object for easy use
-		/// </summary>
-		private Rectangle windowSize;
-		
-		/// <summary>
-		/// Game constructor
-		/// </summary>
-		public Game1()
+        private bool _ready_for_next_input;
+        Texture2D texture;
+
+        /// <summary>
+        /// Stores the window dimensions in a rectangle object for easy use
+        /// </summary>
+        private Rectangle windowSize;
+
+
+        /// <summary>
+        /// Game constructor
+        /// </summary>
+        public Game1()
 		{
 			_graphics = new GraphicsDeviceManager(this);
 			Content.RootDirectory = "Content";
@@ -46,10 +50,13 @@ namespace DevcadeGame
 			_graphics.ApplyChanges();
 #endif
 			#endregion
-			
-			// TODO: Add your initialization logic here
 
-			windowSize = GraphicsDevice.Viewport.Bounds;
+			// TODO: Add your initialization logic here
+			_ready_for_next_input = true;
+			texture = new Texture2D(GraphicsDevice, 1, 1);
+
+
+            windowSize = GraphicsDevice.Viewport.Bounds;
 			
 			base.Initialize();
 		}
@@ -65,6 +72,7 @@ namespace DevcadeGame
 			// ex:
 			// texture = Content.Load<Texture2D>("fileNameWithoutExtension");
 		}
+
 
 		/// <summary>
 		/// Your main update loop. This runs once every frame, over and over.
@@ -84,6 +92,12 @@ namespace DevcadeGame
 				Exit();
 			}
 
+			
+
+			
+
+			
+
 			// TODO: Add your update logic here
 
 			base.Update(gameTime);
@@ -95,15 +109,30 @@ namespace DevcadeGame
 		/// <param name="gameTime">This is the gameTime object you can use to get the time since last frame.</param>
 		protected override void Draw(GameTime gameTime)
 		{
-			GraphicsDevice.Clear(Color.CornflowerBlue);
+			GraphicsDevice.Clear(Color.Gray);
+
+			if (_ready_for_next_input && Keyboard.GetState().IsKeyDown(Keys.Down))
+			{
+				GraphicsDevice.Clear(Color.White);
+			}
+
 			
-			// Batches all the draw calls for this frame, and then performs them all at once
-			_spriteBatch.Begin();
+
+            // Batches all the draw calls for this frame, and then performs them all at once
+            _spriteBatch.Begin();
+
+            if (_ready_for_next_input && Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                _spriteBatch.Draw(texture, new Rectangle(100, 100, 100, 100), Color.White);
+                _ready_for_next_input = false;
+            }
+            
 			// TODO: Add your drawing code here
 			
 			_spriteBatch.End();
 
 			base.Draw(gameTime);
 		}
+
 	}
 }
