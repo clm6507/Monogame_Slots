@@ -4,64 +4,69 @@ using Microsoft.Xna.Framework.Input;
 using Devcade;
 using System;
 using System.ComponentModel.Design;
+using System.Net.Mime;
 
 // MAKE SURE YOU RENAME ALL PROJECT FILES FROM DevcadeGame TO YOUR YOUR GAME NAME
 namespace DevcadeSlots
 {
 	public class SlotImage
 	{
-		private int num;
+        private int num;
 		private Texture2D texture;
-		public SlotImage() 
+		private GraphicsDeviceManager graphics;
+
+
+		public SlotImage(Texture2D[] texture2D)
 		{
 			Random rand = new Random();
 			int randInt = rand.Next(0,100);
-			if (randInt < 50)
+			if (randInt < 40)
 			{
-				//texture = FILL THIS IN;
+				texture = texture2D[0];
 				num = 1;
-			}else if (randInt < 70)
+			}else if (randInt < 65)
 			{
-                //texture = FILL THIS IN;
+                texture = texture2D[1];
                 num = 2;
 			}else if (randInt < 85)
 			{
-                //texture = FILL THIS IN;
+                texture = texture2D[2];
                 num = 3;
             }
             else if (randInt < 95)
 			{
-                //texture = FILL THIS IN;
+                texture = texture2D[3];
                 num = 4;
             }
             else
 			{
-                //texture = FILL THIS IN;
+                texture = texture2D[4];
                 num = 5;
             }
 		}
 
-		public SlotImage(int num)
+		public SlotImage(Texture2D[] texture2D, int num)
 		{
 			this.num = num;
 			if (num == 1)
 			{
-				//texture = FILL THIS IN
-			}else if (num == 2)
+                texture = texture2D[0];
+            }
+            else if (num == 2)
 			{
-                //texture = FILL THIS IN
+                texture = texture2D[1];
             }
             else if (num == 3)
 			{
-                //texture = FILL THIS IN
+                texture = texture2D[2];
             }
             else if (num == 4)
 			{
-                //texture = FILL THIS IN
+                texture = texture2D[3];
             }
             else
 			{
-                //texture = FILL THIS IN
+                texture = texture2D[4];
             }
         }
 
@@ -70,7 +75,7 @@ namespace DevcadeSlots
 			return num;
 		}
 
-		public Texture2D GetTexture()
+		public Texture2D getTexture()
 		{
 			return texture;
 		}
@@ -78,15 +83,38 @@ namespace DevcadeSlots
 
 	public class Game1 : Game
 	{
-		private GraphicsDeviceManager _graphics;
+        private GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
+
+        private int _topImageLine;
+        private int _bottomImageLine;
+        private int _imageWidth;
+
+        private int _col1image0y;
+        private int _col1image1y;
+
+        private int _col2image0y;
+        private int _col2image1y;
+
+        private int _col3image0y;
+        private int _col3image1y;
+
+		private int _spinSpeed;
+
+		private int _col1Counter;
+		private int _col2Counter;
+		private int _col3Counter;
+
         private bool _readyForNextInput;
-		private bool _colOneMoving;
-		private bool _colTwoMoving;
-		private bool _colThreeMoving;
+		//private bool _colOneMoving;
+		//private bool _colTwoMoving;
+		//private bool _colThreeMoving;
+
 		private SlotImage[] _colOne;
 		private SlotImage[] _colTwo;
 		private SlotImage[] _colThree;
+
+		private Texture2D[] _images;
         Texture2D texture;
 
         /// <summary>
@@ -124,33 +152,45 @@ namespace DevcadeSlots
 			_graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
 			_graphics.ApplyChanges();
 #endif
-			#endregion
-
-			// TODO: Add your initialization logic here
-			_readyForNextInput = true;
-
-			_colOneMoving = false;
-			_colTwoMoving = false;
-			_colThreeMoving = false;
-
-			_colOne = new SlotImage[2];
-			_colTwo = new SlotImage[2];
-			_colThree = new SlotImage[2];
-			
-			_colOne[0] = new SlotImage();
-			_colOne[1] = new SlotImage(1);
-
-            _colTwo[0] = new SlotImage();
-            _colTwo[1] = new SlotImage(1);
-
-            _colThree[0] = new SlotImage();
-            _colThree[1] = new SlotImage(1);
-
-
-            texture = new Texture2D(GraphicsDevice, 1, 1);
-
+            #endregion
 
             windowSize = GraphicsDevice.Viewport.Bounds;
+
+            // TODO: Add your initialization logic here
+            _imageWidth = windowSize.Width / 3;
+			_bottomImageLine = windowSize.Height/2 - _imageWidth / 2 ;
+			_topImageLine = _bottomImageLine - _imageWidth;
+
+			_col1image0y = _topImageLine;
+			_col1image1y = _bottomImageLine;
+
+			_col2image0y = _topImageLine;
+			_col2image1y = _bottomImageLine;
+
+			_col3image0y = _topImageLine;
+			_col3image1y = _bottomImageLine;
+
+			_spinSpeed = _imageWidth / 6;
+
+			_col1Counter = 0;
+			_col2Counter = 0;
+			_col3Counter = 0;
+			
+			_readyForNextInput = true;
+
+
+			//_colOneMoving = false;
+			//_colTwoMoving = false;
+			//_colThreeMoving = false;
+
+            _colOne = new SlotImage[2];
+            _colTwo = new SlotImage[2];
+            _colThree = new SlotImage[2];
+
+			Color[] data = new Color[] { Color.White };
+            texture = new Texture2D(GraphicsDevice, 1, 1);
+			texture.SetData(data);
+
 			
 			base.Initialize();
 		}
@@ -162,10 +202,26 @@ namespace DevcadeSlots
 		{
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-			// TODO: use this.Content to load your game content here
-			// ex:
-			// texture = Content.Load<Texture2D>("fileNameWithoutExtension");
-		}
+			_images = new Texture2D[5];
+			_images[0] = this.Content.Load<Texture2D>("GrapeImage");
+			_images[1] = this.Content.Load<Texture2D>("WatermelonImage");
+			_images[2] = this.Content.Load<Texture2D>("DiceImage");
+			_images[3] = this.Content.Load<Texture2D>("CrownImage");
+			_images[4] = this.Content.Load<Texture2D>("7Image");
+
+            _colOne[0] = new SlotImage(_images);
+            _colOne[1] = new SlotImage(_images,5);
+
+            _colTwo[0] = new SlotImage(_images);
+            _colTwo[1] = new SlotImage(_images,5);
+
+            _colThree[0] = new SlotImage(_images);
+            _colThree[1] = new SlotImage(_images,5);
+
+            // TODO: use this.Content to load your game content here
+            // ex:
+            // texture = Content.Load<Texture2D>("fileNameWithoutExtension");
+        }
 
 
 		/// <summary>
@@ -186,15 +242,48 @@ namespace DevcadeSlots
 				Exit();
 			}
 
-			
+			if (_col1Counter < 50)
+			{
+                _col1image0y += _spinSpeed;
+                _col1image1y += _spinSpeed;
+			}
 
-			
+			if(_col2Counter < 100)
+			{
+                _col2image0y += _spinSpeed;
+                _col2image1y += _spinSpeed;
+            }
 
-			
+			if (_col3Counter < 150)
+			{
+                _col3image0y += _spinSpeed;
+                _col3image1y += _spinSpeed;
+            }
 
-			// TODO: Add your update logic here
 
-			base.Update(gameTime);
+			if (_col1image1y + _imageWidth >= _bottomImageLine + _imageWidth)
+			{
+
+                _col1Counter++;
+            }
+
+            if (_col2image1y + _imageWidth >= _bottomImageLine + _imageWidth)
+            {
+
+                _col2Counter++;
+            }
+
+            if (_col3image1y + _imageWidth >= _bottomImageLine + _imageWidth)
+            {
+
+                _col3Counter++;
+            }
+
+
+
+            // TODO: Add your update logic here
+
+            base.Update(gameTime);
 		}
 
 		/// <summary>
@@ -205,19 +294,27 @@ namespace DevcadeSlots
 		{
 			GraphicsDevice.Clear(Color.Gray);
 
-			if (_readyForNextInput && Keyboard.GetState().IsKeyDown(Keys.Down))
-			{
-				GraphicsDevice.Clear(Color.White);
-			}
-
 			
 
             // Batches all the draw calls for this frame, and then performs them all at once
             _spriteBatch.Begin();
 
+            _spriteBatch.Draw(_colOne[0].getTexture(), new Rectangle(0, _col1image0y, _imageWidth, _imageWidth), Color.White);
+            _spriteBatch.Draw(_colOne[1].getTexture(), new Rectangle(0, _col1image1y,_imageWidth,_imageWidth), Color.White);
+
+            _spriteBatch.Draw(_colTwo[0].getTexture(), new Rectangle(_imageWidth, _col2image0y, _imageWidth, _imageWidth), Color.White);
+            _spriteBatch.Draw(_colTwo[1].getTexture(), new Rectangle(_imageWidth, _col2image1y, _imageWidth, _imageWidth), Color.White);
+
+            _spriteBatch.Draw(_colThree[0].getTexture(), new Rectangle(_imageWidth*2, _col3image0y, _imageWidth, _imageWidth), Color.White);
+            _spriteBatch.Draw(_colThree[1].getTexture(), new Rectangle(_imageWidth*2, _col3image1y, _imageWidth, _imageWidth), Color.White);
+
+			_spriteBatch.Draw(texture, new Rectangle(0, 0, windowSize.Width, _bottomImageLine), Color.Gray);
+			_spriteBatch.Draw(texture, new Rectangle(0, _bottomImageLine + _imageWidth, windowSize.Width, _bottomImageLine), Color.Gray);
+
+
             if (_readyForNextInput && Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                _spriteBatch.Draw(texture, new Rectangle(100, 100, 100, 100), Color.White);
+				_spriteBatch.Draw(_colOne[0].getTexture(), new Rectangle(100, 100, 100, 100), Color.White);
                 _readyForNextInput = false;
             }
             
