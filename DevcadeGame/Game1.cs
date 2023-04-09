@@ -106,9 +106,6 @@ namespace DevcadeSlots
 		private int _col3Counter;
 
         private bool _readyForNextInput;
-		//private bool _colOneMoving;
-		//private bool _colTwoMoving;
-		//private bool _colThreeMoving;
 
 		private SlotImage[] _colOne;
 		private SlotImage[] _colTwo;
@@ -170,18 +167,13 @@ namespace DevcadeSlots
 			_col3image0y = _topImageLine;
 			_col3image1y = _bottomImageLine;
 
-			_spinSpeed = _imageWidth / 6;
+			_spinSpeed = _imageWidth / 4;
 
 			_col1Counter = 0;
 			_col2Counter = 0;
 			_col3Counter = 0;
 			
 			_readyForNextInput = true;
-
-
-			//_colOneMoving = false;
-			//_colTwoMoving = false;
-			//_colThreeMoving = false;
 
             _colOne = new SlotImage[2];
             _colTwo = new SlotImage[2];
@@ -242,41 +234,78 @@ namespace DevcadeSlots
 				Exit();
 			}
 
-			if (_col1Counter < 50)
+            if (_readyForNextInput && (Keyboard.GetState().IsKeyDown(Keys.Down) || Input.GetButtonDown(1,Input.ArcadeButtons.StickDown) || Input.GetButtonDown(2, Input.ArcadeButtons.StickDown)))
 			{
-                _col1image0y += _spinSpeed;
-                _col1image1y += _spinSpeed;
+				_readyForNextInput = false;
 			}
-
-			if(_col2Counter < 100)
+			else if( !_readyForNextInput )
 			{
-                _col2image0y += _spinSpeed;
-                _col2image1y += _spinSpeed;
+                if (_col1Counter < 30)
+                {
+                    _col1image0y += _spinSpeed;
+                    _col1image1y += _spinSpeed;
+                }
+
+                if (_col2Counter < 40)
+                {
+                    _col2image0y += _spinSpeed;
+                    _col2image1y += _spinSpeed;
+                }
+
+                if (_col3Counter < 50)
+                {
+                    _col3image0y += _spinSpeed;
+                    _col3image1y += _spinSpeed;
+                }
+
+
+                if (_col1image1y >= _bottomImageLine + _imageWidth)
+                {
+                    _col1image0y = _topImageLine;
+                    _col1image1y = _bottomImageLine;
+
+                    _colOne[1] = _colOne[0];
+                    _colOne[0] = new SlotImage(_images);
+
+                    _col1Counter++;
+                    //PLAY TICK SOUND?
+                }
+
+                if (_col2image1y >= _bottomImageLine + _imageWidth)
+                {
+                    _col2image0y = _topImageLine;
+                    _col2image1y = _bottomImageLine;
+
+                    _colTwo[1] = _colTwo[0];
+                    _colTwo[0] = new SlotImage(_images);
+
+                    _col2Counter++;
+                    //PLAY TICK SOUND?
+                }
+
+                if (_col3image1y >= _bottomImageLine + _imageWidth)
+                {
+                    _col3image0y = _topImageLine;
+                    _col3image1y = _bottomImageLine;
+
+                    _colThree[1] = _colThree[0];
+                    _colThree[0] = new SlotImage(_images);
+
+                    _col3Counter++;
+                    //PLAY TICK SOUND?
+                }
+
+				if (_col3Counter >= 50)
+				{
+                    _readyForNextInput = true;
+                }
             }
 
-			if (_col3Counter < 150)
-			{
-                _col3image0y += _spinSpeed;
-                _col3image1y += _spinSpeed;
-            }
-
-
-			if (_col1image1y + _imageWidth >= _bottomImageLine + _imageWidth)
-			{
-
-                _col1Counter++;
-            }
-
-            if (_col2image1y + _imageWidth >= _bottomImageLine + _imageWidth)
+            if (_readyForNextInput && _col3Counter == 50)
             {
-
-                _col2Counter++;
-            }
-
-            if (_col3image1y + _imageWidth >= _bottomImageLine + _imageWidth)
-            {
-
-                _col3Counter++;
+                _col1Counter = 0;
+                _col2Counter = 0;
+                _col3Counter = 0;
             }
 
 
@@ -311,12 +340,6 @@ namespace DevcadeSlots
 			_spriteBatch.Draw(texture, new Rectangle(0, 0, windowSize.Width, _bottomImageLine), Color.Gray);
 			_spriteBatch.Draw(texture, new Rectangle(0, _bottomImageLine + _imageWidth, windowSize.Width, _bottomImageLine), Color.Gray);
 
-
-            if (_readyForNextInput && Keyboard.GetState().IsKeyDown(Keys.Down))
-            {
-				_spriteBatch.Draw(_colOne[0].getTexture(), new Rectangle(100, 100, 100, 100), Color.White);
-                _readyForNextInput = false;
-            }
             
 			// TODO: Add your drawing code here
 			
