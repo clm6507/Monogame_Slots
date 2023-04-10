@@ -5,6 +5,7 @@ using Devcade;
 using System;
 using System.ComponentModel.Design;
 using System.Net.Mime;
+using Microsoft.Xna.Framework.Audio;
 
 // MAKE SURE YOU RENAME ALL PROJECT FILES FROM DevcadeGame TO YOUR YOUR GAME NAME
 namespace DevcadeSlots
@@ -13,7 +14,6 @@ namespace DevcadeSlots
 	{
         private int num;
 		private Texture2D texture;
-		private GraphicsDeviceManager graphics;
 
 
 		public SlotImage(Texture2D[] texture2D)
@@ -86,6 +86,8 @@ namespace DevcadeSlots
         private GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
 
+		private Texture2D _headerThing;
+
         private int _topImageLine;
         private int _bottomImageLine;
         private int _imageWidth;
@@ -107,11 +109,16 @@ namespace DevcadeSlots
 
         private bool _readyForNextInput;
 
+		private bool _playWinSoundEffect;
+
 		private SlotImage[] _colOne;
 		private SlotImage[] _colTwo;
 		private SlotImage[] _colThree;
 
 		private Texture2D[] _images;
+
+		private SoundEffect _tick;
+
         Texture2D texture;
 
         /// <summary>
@@ -154,10 +161,13 @@ namespace DevcadeSlots
             windowSize = GraphicsDevice.Viewport.Bounds;
 
             // TODO: Add your initialization logic here
+
+			//Setting up basic boundries of where things go for the machine
             _imageWidth = windowSize.Width / 3;
 			_bottomImageLine = windowSize.Height/2 - _imageWidth / 2 ;
 			_topImageLine = _bottomImageLine - _imageWidth;
 
+			//Setting up were each slot image is going to start
 			_col1image0y = _topImageLine;
 			_col1image1y = _bottomImageLine;
 
@@ -167,18 +177,26 @@ namespace DevcadeSlots
 			_col3image0y = _topImageLine;
 			_col3image1y = _bottomImageLine;
 
+			//This controls how fast the images go by the window
 			_spinSpeed = _imageWidth / 4;
 
+			//For counting how many images how gone by the slot window
 			_col1Counter = 0;
 			_col2Counter = 0;
 			_col3Counter = 0;
 			
+			//Controls logic for determining if the user is allowed to spin the slot machine again
 			_readyForNextInput = true;
 
+			//Shows if the machine should play a sound effect because the player has won
+			_playWinSoundEffect = false;
+
+			//Store the images that are going to be displayed for each column
             _colOne = new SlotImage[2];
             _colTwo = new SlotImage[2];
             _colThree = new SlotImage[2];
 
+			//Setting up a Texture2D that will be used in making single color Rectangles that are displayed
 			Color[] data = new Color[] { Color.White };
             texture = new Texture2D(GraphicsDevice, 1, 1);
 			texture.SetData(data);
@@ -194,6 +212,10 @@ namespace DevcadeSlots
 		{
 			_spriteBatch = new SpriteBatch(GraphicsDevice);
 
+			//The label thing I made in MSPaint that says "CSH Casino"
+			_headerThing = this.Content.Load<Texture2D>("TopThing");
+
+			//Adding all the images I want into an array so I can pass it to the SlotImage class
 			_images = new Texture2D[5];
 			_images[0] = this.Content.Load<Texture2D>("GrapeImage");
 			_images[1] = this.Content.Load<Texture2D>("WatermelonImage");
@@ -201,6 +223,7 @@ namespace DevcadeSlots
 			_images[3] = this.Content.Load<Texture2D>("CrownImage");
 			_images[4] = this.Content.Load<Texture2D>("7Image");
 
+			//Loading initial images for the columns
             _colOne[0] = new SlotImage(_images);
             _colOne[1] = new SlotImage(_images,5);
 
@@ -209,6 +232,9 @@ namespace DevcadeSlots
 
             _colThree[0] = new SlotImage(_images);
             _colThree[1] = new SlotImage(_images,5);
+
+			//Loads the sound effect that plays while the slot machine is displaying images
+			_tick = Content.Load<SoundEffect>("tick");
 
             // TODO: use this.Content to load your game content here
             // ex:
@@ -268,7 +294,6 @@ namespace DevcadeSlots
                     _colOne[0] = new SlotImage(_images);
 
                     _col1Counter++;
-                    //PLAY TICK SOUND?
                 }
 
                 if (_col2image1y >= _bottomImageLine + _imageWidth)
@@ -280,7 +305,6 @@ namespace DevcadeSlots
                     _colTwo[0] = new SlotImage(_images);
 
                     _col2Counter++;
-                    //PLAY TICK SOUND?
                 }
 
                 if (_col3image1y >= _bottomImageLine + _imageWidth)
@@ -292,7 +316,7 @@ namespace DevcadeSlots
                     _colThree[0] = new SlotImage(_images);
 
                     _col3Counter++;
-                    //PLAY TICK SOUND?
+					_tick.Play();
                 }
 
 				if (_col3Counter >= 50)
@@ -306,8 +330,32 @@ namespace DevcadeSlots
                 _col1Counter = 0;
                 _col2Counter = 0;
                 _col3Counter = 0;
+				if (_colOne[1].getNum() == _colTwo[1].getNum() && _colOne[1].getNum() == _colThree[1].getNum())
+				{
+					_playWinSoundEffect = false;
+				}
             }
 
+			//IMPLEMENT THIS
+			if (_playWinSoundEffect)
+			{
+				if (_colOne[1].getNum() == 1)
+				{
+
+				}else if(_colOne[1].getNum() == 2)
+				{
+
+				}else if(_colOne[1].getNum() == 3)
+				{
+
+				}else if(_colOne[1].getNum() == 4)
+				{
+
+				}else if(_colOne[1].getNum() == 5)
+				{
+
+				}
+			}
 
 
             // TODO: Add your update logic here
@@ -340,10 +388,12 @@ namespace DevcadeSlots
 			_spriteBatch.Draw(texture, new Rectangle(0, 0, windowSize.Width, _bottomImageLine), Color.Gray);
 			_spriteBatch.Draw(texture, new Rectangle(0, _bottomImageLine + _imageWidth, windowSize.Width, _bottomImageLine), Color.Gray);
 
-            
-			// TODO: Add your drawing code here
-			
-			_spriteBatch.End();
+            _spriteBatch.Draw(_headerThing, new Rectangle(_imageWidth/2, 0, windowSize.Width-_imageWidth, windowSize.Height/4), Color.White);
+
+
+            // TODO: Add your drawing code here
+
+            _spriteBatch.End();
 
 			base.Draw(gameTime);
 		}
