@@ -107,9 +107,20 @@ namespace DevcadeSlots
 		private int _col2Counter;
 		private int _col3Counter;
 
+		private int _numSpins;
+
         private bool _readyForNextInput;
 
 		private bool _playWinSoundEffect;
+
+		private bool _testing;
+		private int _testingImage;
+
+		private SoundEffect _win1Sound;
+		private SoundEffect _win2Sound;
+		private SoundEffect _win3Sound;
+		private SoundEffect _win4Sound;
+		private SoundEffect _win5Sound;
 
 		private SlotImage[] _colOne;
 		private SlotImage[] _colTwo;
@@ -184,6 +195,9 @@ namespace DevcadeSlots
 			_col1Counter = 0;
 			_col2Counter = 0;
 			_col3Counter = 0;
+
+			//For counting how many times the user has spun this game
+			_numSpins = 0;
 			
 			//Controls logic for determining if the user is allowed to spin the slot machine again
 			_readyForNextInput = true;
@@ -201,6 +215,12 @@ namespace DevcadeSlots
             texture = new Texture2D(GraphicsDevice, 1, 1);
 			texture.SetData(data);
 
+
+			//ONLY MAKE THIS TRUE TO TEST
+
+			_testing = false;
+			_testingImage = 5;
+
 			
 			base.Initialize();
 		}
@@ -217,11 +237,11 @@ namespace DevcadeSlots
 
 			//Adding all the images I want into an array so I can pass it to the SlotImage class
 			_images = new Texture2D[5];
-			_images[0] = this.Content.Load<Texture2D>("GrapeImage");
-			_images[1] = this.Content.Load<Texture2D>("WatermelonImage");
-			_images[2] = this.Content.Load<Texture2D>("DiceImage");
-			_images[3] = this.Content.Load<Texture2D>("CrownImage");
-			_images[4] = this.Content.Load<Texture2D>("7Image");
+			_images[0] = Content.Load<Texture2D>("metalPipePic");
+			_images[1] = Content.Load<Texture2D>("amongusPic");
+			_images[2] = Content.Load<Texture2D>("DiceImage");
+			_images[3] = Content.Load<Texture2D>("CrownImage");
+			_images[4] = Content.Load<Texture2D>("7Image");
 
 			//Loading initial images for the columns
             _colOne[0] = new SlotImage(_images);
@@ -235,6 +255,12 @@ namespace DevcadeSlots
 
 			//Loads the sound effect that plays while the slot machine is displaying images
 			_tick = Content.Load<SoundEffect>("tick");
+			
+			_win1Sound = Content.Load<SoundEffect>("metalPipe");
+            _win2Sound = Content.Load<SoundEffect>("newAmongusSound");
+            _win3Sound = Content.Load<SoundEffect>("metalPipe");
+            _win4Sound = Content.Load<SoundEffect>("metalPipe");
+            _win5Sound = Content.Load<SoundEffect>("jackpotSound");
 
             // TODO: use this.Content to load your game content here
             // ex:
@@ -263,6 +289,7 @@ namespace DevcadeSlots
             if (_readyForNextInput && (Keyboard.GetState().IsKeyDown(Keys.Down) || Input.GetButtonDown(1,Input.ArcadeButtons.StickDown) || Input.GetButtonDown(2, Input.ArcadeButtons.StickDown)))
 			{
 				_readyForNextInput = false;
+				_numSpins++;
 			}
 			else if( !_readyForNextInput )
 			{
@@ -285,13 +312,22 @@ namespace DevcadeSlots
                 }
 
 
-                if (_col1image1y >= _bottomImageLine + _imageWidth)
-                {
-                    _col1image0y = _topImageLine;
-                    _col1image1y = _bottomImageLine;
+				if (_col1image1y >= _bottomImageLine + _imageWidth)
+				{
+					_col1image0y = _topImageLine;
+					_col1image1y = _bottomImageLine;
 
-                    _colOne[1] = _colOne[0];
-                    _colOne[0] = new SlotImage(_images);
+					if (_testing)
+					{
+                        _colOne[1] = _colOne[0];
+                        _colOne[0] = new SlotImage(_images,_testingImage);
+                    }
+					else
+					{
+                        _colOne[1] = _colOne[0];
+                        _colOne[0] = new SlotImage(_images);
+                    }
+                    
 
                     _col1Counter++;
                 }
@@ -301,8 +337,16 @@ namespace DevcadeSlots
                     _col2image0y = _topImageLine;
                     _col2image1y = _bottomImageLine;
 
-                    _colTwo[1] = _colTwo[0];
-                    _colTwo[0] = new SlotImage(_images);
+					if (_testing)
+					{
+                        _colTwo[1] = _colTwo[0];
+                        _colTwo[0] = new SlotImage(_images,_testingImage);
+                    }
+					else
+					{
+                        _colTwo[1] = _colTwo[0];
+                        _colTwo[0] = new SlotImage(_images);
+                    }
 
                     _col2Counter++;
                 }
@@ -312,8 +356,17 @@ namespace DevcadeSlots
                     _col3image0y = _topImageLine;
                     _col3image1y = _bottomImageLine;
 
-                    _colThree[1] = _colThree[0];
-                    _colThree[0] = new SlotImage(_images);
+					if(_testing)
+					{
+                        _colThree[1] = _colThree[0];
+                        _colThree[0] = new SlotImage(_images,_testingImage);
+                    }
+					else
+					{
+                        _colThree[1] = _colThree[0];
+                        _colThree[0] = new SlotImage(_images);
+                    }
+                    
 
                     _col3Counter++;
 					_tick.Play();
@@ -332,7 +385,7 @@ namespace DevcadeSlots
                 _col3Counter = 0;
 				if (_colOne[1].getNum() == _colTwo[1].getNum() && _colOne[1].getNum() == _colThree[1].getNum())
 				{
-					_playWinSoundEffect = false;
+					_playWinSoundEffect = true;
 				}
             }
 
@@ -341,20 +394,29 @@ namespace DevcadeSlots
 			{
 				if (_colOne[1].getNum() == 1)
 				{
-
-				}else if(_colOne[1].getNum() == 2)
+					_win1Sound.Play();
+                    _playWinSoundEffect = false;
+                }
+                else if(_colOne[1].getNum() == 2)
 				{
-
-				}else if(_colOne[1].getNum() == 3)
+					_win2Sound.Play();
+                    _playWinSoundEffect = false;
+                }
+                else if(_colOne[1].getNum() == 3)
 				{
-
-				}else if(_colOne[1].getNum() == 4)
+                    _win3Sound.Play();
+                    _playWinSoundEffect = false;
+                }
+                else if(_colOne[1].getNum() == 4)
 				{
-
-				}else if(_colOne[1].getNum() == 5)
+                    _win4Sound.Play();
+					_playWinSoundEffect = false;
+                }
+                else if (_colOne[1].getNum() == 5)
 				{
-
-				}
+                    _win5Sound.Play();
+					_playWinSoundEffect = false;
+                }
 			}
 
 

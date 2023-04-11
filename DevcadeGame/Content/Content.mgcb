@@ -25,6 +25,18 @@
 /processorParam:TextureFormat=Color
 /build:7Image.jpg
 
+#begin amongusPic.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:amongusPic.png
+
 #begin CrownImage.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -61,11 +73,35 @@
 /processorParam:TextureFormat=Color
 /build:GrapeImage.jpg
 
+#begin jackpotSound.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:jackpotSound.wav
+
 #begin metalPipe.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:metalPipe.wav
+
+#begin metalPipePic.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:metalPipePic.png
+
+#begin newAmongusSound.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:newAmongusSound.wav
 
 #begin soundThatShouldntBeUsed.wav
 /importer:WavImporter
