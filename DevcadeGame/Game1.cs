@@ -237,7 +237,7 @@ namespace DevcadeSlots
 
 			//ONLY MAKE THIS TRUE TO TEST
 
-			_testing = true;
+			_testing = false;
 			_testingImage = 5;
 
 			
