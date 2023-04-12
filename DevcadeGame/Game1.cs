@@ -6,10 +6,12 @@ using System;
 using System.ComponentModel.Design;
 using System.Net.Mime;
 using Microsoft.Xna.Framework.Audio;
+using System.IO;
 
 // MAKE SURE YOU RENAME ALL PROJECT FILES FROM DevcadeGame TO YOUR YOUR GAME NAME
 namespace DevcadeSlots
 {
+	
 	public class SlotImage
 	{
         private int num;
@@ -86,6 +88,8 @@ namespace DevcadeSlots
         private GraphicsDeviceManager _graphics;
 		private SpriteBatch _spriteBatch;
 
+		private SpriteFont _font;
+
 		private Texture2D _headerThing;
 
         private int _topImageLine;
@@ -108,6 +112,7 @@ namespace DevcadeSlots
 		private int _col3Counter;
 
 		private int _numSpins;
+		private int _numWins;
 
         private bool _readyForNextInput;
 
@@ -129,6 +134,10 @@ namespace DevcadeSlots
 		private Texture2D[] _images;
 
 		private SoundEffect _tick;
+
+		private string _explination;
+		private string _spinsString;
+		private string _winsString;
 
         Texture2D texture;
 
@@ -198,6 +207,9 @@ namespace DevcadeSlots
 
 			//For counting how many times the user has spun this game
 			_numSpins = 0;
+
+			//For counting how many times the user has won this game
+			_numWins = 0;
 			
 			//Controls logic for determining if the user is allowed to spin the slot machine again
 			_readyForNextInput = true;
@@ -215,10 +227,17 @@ namespace DevcadeSlots
             texture = new Texture2D(GraphicsDevice, 1, 1);
 			texture.SetData(data);
 
+			//Setting up the font so we can write text on the screen
+			_font = Content.Load<SpriteFont>("slotsFont");
+
+			//Setting up the strings that are going to be displayed
+			_explination = "Welcome to the CSH Casino!\nThe rules are simple:\nGet three of the same pictures in a row\nto win!";
+			_spinsString = "Number of spins this game: ";
+			_winsString = "Number of wins this game: ";
 
 			//ONLY MAKE THIS TRUE TO TEST
 
-			_testing = false;
+			_testing = true;
 			_testingImage = 5;
 
 			
@@ -239,27 +258,27 @@ namespace DevcadeSlots
 			_images = new Texture2D[5];
 			_images[0] = Content.Load<Texture2D>("metalPipePic");
 			_images[1] = Content.Load<Texture2D>("amongusPic");
-			_images[2] = Content.Load<Texture2D>("DiceImage");
-			_images[3] = Content.Load<Texture2D>("CrownImage");
+			_images[2] = Content.Load<Texture2D>("CSHLogo");
+			_images[3] = Content.Load<Texture2D>("WilsonPic");
 			_images[4] = Content.Load<Texture2D>("7Image");
 
 			//Loading initial images for the columns
             _colOne[0] = new SlotImage(_images);
-            _colOne[1] = new SlotImage(_images,5);
+            _colOne[1] = new SlotImage(_images);
 
             _colTwo[0] = new SlotImage(_images);
-            _colTwo[1] = new SlotImage(_images,5);
+            _colTwo[1] = new SlotImage(_images);
 
             _colThree[0] = new SlotImage(_images);
-            _colThree[1] = new SlotImage(_images,5);
+            _colThree[1] = new SlotImage(_images);
 
 			//Loads the sound effect that plays while the slot machine is displaying images
 			_tick = Content.Load<SoundEffect>("tick");
 			
 			_win1Sound = Content.Load<SoundEffect>("metalPipe");
             _win2Sound = Content.Load<SoundEffect>("newAmongusSound");
-            _win3Sound = Content.Load<SoundEffect>("metalPipe");
-            _win4Sound = Content.Load<SoundEffect>("metalPipe");
+            _win3Sound = Content.Load<SoundEffect>("YIPPEE");
+            _win4Sound = Content.Load<SoundEffect>("tacoBellDing");
             _win5Sound = Content.Load<SoundEffect>("jackpotSound");
 
             // TODO: use this.Content to load your game content here
@@ -386,6 +405,7 @@ namespace DevcadeSlots
 				if (_colOne[1].getNum() == _colTwo[1].getNum() && _colOne[1].getNum() == _colThree[1].getNum())
 				{
 					_playWinSoundEffect = true;
+					_numWins++;
 				}
             }
 
@@ -452,6 +472,9 @@ namespace DevcadeSlots
 
             _spriteBatch.Draw(_headerThing, new Rectangle(_imageWidth/2, 0, windowSize.Width-_imageWidth, windowSize.Height/4), Color.White);
 
+			_spriteBatch.DrawString(_font,_explination, new Vector2(windowSize.Width/10,_bottomImageLine + _imageWidth),Color.Black);
+            _spriteBatch.DrawString(_font, _spinsString + _numSpins, new Vector2(windowSize.Width / 10, _bottomImageLine + _imageWidth*2), Color.Black);
+            _spriteBatch.DrawString(_font, _winsString + _numWins, new Vector2(windowSize.Width / 10, _bottomImageLine + _imageWidth * 2 + 30), Color.Black);
 
             // TODO: Add your drawing code here
 
